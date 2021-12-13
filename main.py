@@ -6,6 +6,7 @@ import edit_zabbix_agent as attr_editor
 import edit_parameter as para_editor
 import time
 import constant
+from optparse import OptionParser
 
 def check_user_input(uinput):
     if not uinput:
@@ -13,8 +14,52 @@ def check_user_input(uinput):
     else:
         return True
 
+def import_from_file():
+
+    parser = OptionParser()
+  
+    # ass options
+    parser.add_option("-s", "--source",
+                    dest = "srcfile",
+                    help = "path to imported file", 
+                    metavar = "FILE")
+
+    parser.add_option("-d", "--destination",
+                    dest = "dstfile",
+                    help = "path to file config", 
+                    metavar = "FILE")
+
+    parser.add_option("-e", "--editor",
+                    action = "store_false", 
+                    dest = "editor", default = False,
+                    help = "Enable ZMIS-Editor")
+    
+    (options, args) = parser.parse_args()
+
+    srcfile = options.srcfile
+    dstfile = options.dstfile
+    editor = options.editor
+    if srcfile and dstfile and editor is False:
+        try:
+            with open(srcfile, 'r') as fout:
+                with open(dstfile, 'a') as fin:
+                    lines = fout.readlines()
+                    for line in lines:
+                        fin.write(line)
+                fin.close
+            fout.close
+            time.sleep(1)
+            print(Fore.GREEN + "[+] Your config is imported, please restart service to apply"+Style.RESET_ALL)
+            return True
+        
+        except FileNotFoundError:
+            time.sleep(1)
+            print(Fore.RED + "[-] File not found"+Style.RESET_ALL)
+    else:
+        return editor
+
 def main():
-    ExitFlag = False
+    ExitFlag = import_from_file()
     while ExitFlag is False:
         try:
             attr_editor.show_banner()
@@ -53,7 +98,12 @@ def main():
             print(Style.RESET_ALL)
             break
 
-        except KeyboardInterrupt:
-            print()
-            break
-main()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
+        pass
+    
