@@ -2,16 +2,12 @@ import os
 import re
 import shutil
 import fileinput
-import platform as pfm
-from agent import Agent
-
-attributes = ['Server', 'ServerActive', 'Hostname']
-
-def get_file_path():
-    if(pfm.system() == 'Linux'):
-        return './zabbix_agentd.conf' 
-    else:
-        return ''
+import platform
+from Agent import Agent
+from datetime import datetime
+from colorama import Fore, Back, Style
+import time
+import edit_parameter
 
 def get_max_string(lst):
     return max(lst, key=len)
@@ -23,7 +19,8 @@ def convert_to_json(str, temp_dic):
     
 
 #lay thong tin hien co trong file config cua zabbix_agentd.conf va luu vao dictionary
-def get_config_attr(conf_file):
+def extract_attr_from_file(conf_file):
+    attributes = ["Server", "ServerActive", "Hostname"]
     sys_parameters = dict()
     with open(conf_file) as fr:
         lines = fr.readlines()
@@ -34,11 +31,13 @@ def get_config_attr(conf_file):
     fr.close()
     return sys_parameters
 
-def set_config_attr(config_attributes, conf_file):
+#ham backup va save cac thay doi
+def save_changed(config_attributes, conf_file):
     current_config = []
-    new_config_list = []
     modified_config_content = ""
+
     backup_file(conf_file)
+
     with open(conf_file, "r") as fout:
         lines = fout.readlines()
         for line in lines:
@@ -61,28 +60,18 @@ def set_config_attr(config_attributes, conf_file):
         fin.write(modified_config_content)
     
     fin.close()
-    print("Replaced")
+    print(Fore.GREEN +"[+] Saved")
 
 
-def display_infomation(d):
-    n = len(get_max_string(d.values())) + 80
-    print("-"*n)
-    # Print the names of the columns.
-    print ("{:<20} | {:<80}".format('Attribute', 'Value'))
-    print("-"*n)
-    # print each data item.
-    for key, value in d.items():
-        print("{:<20} | {:<80}".format(key, value))
-        print("-"*n)
+def menu(agent, conf_list, conf_file_path):
 
+    flag = False
 
+    while flag is False:
 
-def menu(agent):
-    flag = 1
-    while(flag):
-        agent.display()
-        print('\n')
-        print("Enter number to select options")
+        agent.display_attribute()
+
+        print("\nEnter number to select options")
         
         print("1. Change Server\n")
         
@@ -90,7 +79,11 @@ def menu(agent):
         
         print("3. Change Hostname\n")
 
-        print("4. Exit\n")
+        print("4. Edit UserParameter\n")
+        
+        print("5. Save & Exit\n")
+
+        print("0. Back\n")
 
         user_selection = input("Make your choice: ")
         
@@ -107,68 +100,88 @@ def menu(agent):
             agent.set_hostname(changed_data)
         
         elif user_selection == "4":
-            flag = 0
-        else:
-            print("I don't understand your choice.")
+            edit_parameter.edit_para_menu(agent, conf_list, conf_file_path)
 
-def backup_file(conf_file):
-    source = conf_file
-    destination = conf_file + '.bak'
+        elif user_selection == "5":
+            break
+            
+        elif user_selection == "0":
+            get_user_input(conf_list)
+
+        else:
+            time.sleep(2)
+            print('-'*80)
+            print(Fore.RED+"I don't understand your choice."+ Fore.YELLOW +"Please Enter Again!")
+            print(Style.RESET_ALL)
+    return True
+
+def backup_file(conf_file_path):
+    now = datetime.now()
+    path_bak_folder = '/tmp/bak/'
+    if(os.path.isdir(path_bak_folder)):
+        pass 
+    current_time = now.strftime("%H-%M-%S")
+    source = conf_file_path
+    destination = conf_file_path + '-' + current_time+ '.bak'
     try:
         shutil.copyfile(source, destination)
-        print("File copied successfully.")
+        print(Fore.BLUE +"Backup file successfully.")
  
     # If source and destination are same
     except shutil.SameFileError:
-        print("Source and destination represents the same file.")
+        print(Fore.YELLOW + "[-] Source and destination represents the same file.")
     
     # If destination is a directory.
     except IsADirectoryError:
-        print("Destination is a directory.")
+        print(Fore.YELLOW + "[-] Destination is a directory.")
     
     # If there is any permission issue
     except PermissionError:
-        print("Permission denied.")
+        print(Fore.YELLOW + "[!] Permission denied.")
     
     # For other errors
     except:
-        print("Error occurred while copying file.")
+        time.sleep(1)
+        print(Fore.RED + '[!] Error occurred while copying file.')
+    
+    print(Style.RESET_ALL)
 
 def show_banner():
-    print(""" 
+    print(Fore.BLUE + """ 
 
-          ____  _                       _   _                         
-         |  _ \| |__   __ _ _ __ ___   | | | | ___   __ _ _ __   __ _ 
-         | |_) | '_ \ / _` | '_ ` _ \  | |_| |/ _ \ / _` | '_ \ / _` |
-         |  __/| | | | (_| | | | | | | |  _  | (_) | (_| | | | | (_| |
-         |_|   |_| |_|\__,_|_| |_| |_| |_| |_|\___/ \__,_|_| |_|\__, |
-                                                                |___/ 
-                               _   _             
-                              | | | | __ _  ___  
-                              | |_| |/ _` |/ _ \ 
-                              |  _  | (_| | (_) |
-                              |_| |_|\__,_|\___/ 
+ _______  __ ___ ____        _____    _ _ _             
+|__  /  \/  |_ _/ ___|      | ____|__| (_) |_ ___  _ __ 
+  / /| |\/| || |\___ \ _____|  _| / _` | | __/ _ \| '__|
+ / /_| |  | || | ___) |_____| |__| (_| | | || (_) | |   
+/____|_|  |_|___|____/      |_____\__,_|_|\__\___/|_|   
+    
     
       """)
-
-def find_all(name, path):
-    result = []
-    for root, dirs, files in os.walk(path):
-        if name in files:
-            #result.append(path+name)
-            result.append(os.path.join(root, name))
-    return result
+    print(Style.RESET_ALL)
 
 
-def main():
-    show_banner()
-    conf_file_path = get_file_path()
-    #config_attributes = get_config_attr(conf_file_path)
-    agent = Agent(get_config_attr(conf_file_path))
-    print("Current config of Zabbix Agent\n")
-    menu(agent)
-    agent.display()
-    #set_config_attr(config_attributes, conf_file_path)
-    set_config_attr(agent.__dict__, conf_file_path)
+def get_user_input(lst):
+    flag = False
+    user_input = int()
+    for id, val in enumerate(lst):
+        print(str(id+1)+' - '+val)
+    
+    print("Which file you want to modify? \n")
+    
+    while True:
+        try:
+            user_input = int(input("Enter number to choose: "))
+            return lst[user_input-1]
+        except ValueError:
+            time.sleep(2)
+            print(Fore.RED +"[!] Your input is invalid, please enter again")
+            print(Style.RESET_ALL)
+         
+        except IndexError:
+            time.sleep(2)
+            print(Fore.YELLOW + "Please enter valid number! ")
+            print(Style.RESET_ALL)
+        
+    
 
-main()
+
