@@ -89,15 +89,15 @@ def menu(agent, conf_list, conf_file_path):
         print(Style.RESET_ALL)
         
         if user_selection == "1":
-            changed_data = input("Input your ip server: ")
+            changed_data = input("> Input your ip server: ")
             agent.set_server(changed_data)
         
         elif user_selection == "2":
-            changed_data = input("Input your ip Server Active: ")
+            changed_data = input("> Input your ip Server Active: ")
             agent.set_server_active(changed_data)
         
         elif user_selection == "3":
-            changed_data = input("Input your ip Server Active: ")
+            changed_data = input("> Input your ip Server Active: ")
             agent.set_hostname(changed_data)
         
         elif user_selection == "4":
@@ -105,7 +105,7 @@ def menu(agent, conf_list, conf_file_path):
 
         elif user_selection == "5":
             break
-            
+            return True
         elif user_selection == "0":
             get_user_input(conf_list)
 
