@@ -12,5 +12,8 @@ Install
 Use:
   > Linux
   ```
-  sudo python3 zmis-editor.py
+  sudo python3 zmis-editor.py -h
   ```
+  > Windows
+  **run this program with administrator mode**
+  
