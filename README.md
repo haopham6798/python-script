@@ -1,19 +1,21 @@
 # python-script
 Require:
+
+=======
 ```
   python >= 3.7
   administrator privilege
 ```
+
 Install
   Install colorama package by command: 
   ```
   pip install colorama
   ```
+
 Use:
-  > Linux
+  Linux
+  ```  
+  sudo python3 zmis-editor.py
   ```
-  sudo python3 zmis-editor.py -h
-  ```
-  > Windows
-  **run this program with administrator mode**
-  
+
