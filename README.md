@@ -10,7 +10,7 @@ Install
   pip install colorama
   ```
 Use:
-  Linux
+  > Linux
   ```
   sudo python3 zmis-editor.py
   ```
