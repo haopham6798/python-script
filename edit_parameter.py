@@ -5,18 +5,18 @@ import re
 
 def change_parameter(agent):
     agent.display_parameter()
-    changed_idx = int(input("-> Enter index of parameter: "))
+    changed_idx = int(input("> Enter index of parameter: "))
     changed_idx -= 1
-    changed_para = input("-> Enter your parameter: ")
+    changed_para = input("> Enter your parameter: ")
     agent.update_parameter(changed_idx, changed_para)
 
 def delete_parameter(agent):
-    idx_para = int(input("-> Enter index of parameter: "))
+    idx_para = int(input("> Enter index of parameter: "))
     idx_para -= 1
     agent.delete_parameter(idx_para)
 
 def add_new_parameter(agent):
-    new_para = input("-> Enter your parameter: ")
+    new_para = input("> Enter your parameter: ")
     agent.add_parameter(new_para)
 
 def edit_para_menu(agent, conf_list, conf_file_path):
@@ -34,8 +34,8 @@ def edit_para_menu(agent, conf_list, conf_file_path):
         
         print("5. Back (Not Save)\n")
 
-        print("\nEnter number to select options")
-        user_selection = input("Make your choice: ")
+        print("> Enter number to select options")
+        user_selection = input("> Make your choice: ")
         
         if user_selection == "1":
             change_parameter(agent)
@@ -57,7 +57,7 @@ def edit_para_menu(agent, conf_list, conf_file_path):
         else:
             time.sleep(2)
             print('-'*80)
-            print(Fore.RED+"I don't understand your choice."+ Fore.YELLOW +"Please Enter Again!")
+            print(Fore.RED+"[-] I don't understand your choice.\n"+ Fore.YELLOW +"Please Enter Again!")
             print(Style.RESET_ALL)
     print()
 
@@ -77,5 +77,5 @@ def write_to_file(user_para, conf_file):
         for para in user_para:
             fin.write("UserParameter="+para+"\n")
     fin.close()
-    print(Fore.GREEN +"[+] Saved")
+    print(Fore.GREEN +"[+] Your config is saved")
 

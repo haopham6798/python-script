@@ -71,7 +71,7 @@ def menu(agent, conf_list, conf_file_path):
 
         agent.display_attribute()
 
-        print("\nEnter number to select options")
+        print("> Enter number to select options")
         
         print("1. Change Server\n")
         
@@ -85,18 +85,19 @@ def menu(agent, conf_list, conf_file_path):
 
         print("0. Back\n")
 
-        user_selection = input("Make your choice: ")
+        user_selection = input(Fore.CYAN + "Make your choice: ")
+        print(Style.RESET_ALL)
         
         if user_selection == "1":
-            changed_data = input("Input your ip server: ")
+            changed_data = input("> Input your ip server: ")
             agent.set_server(changed_data)
         
         elif user_selection == "2":
-            changed_data = input("Input your ip Server Active: ")
+            changed_data = input("> Input your ip Server Active: ")
             agent.set_server_active(changed_data)
         
         elif user_selection == "3":
-            changed_data = input("Input your ip Server Active: ")
+            changed_data = input("> Input your ip Server Active: ")
             agent.set_hostname(changed_data)
         
         elif user_selection == "4":
@@ -104,7 +105,7 @@ def menu(agent, conf_list, conf_file_path):
 
         elif user_selection == "5":
             break
-            
+            return True
         elif user_selection == "0":
             get_user_input(conf_list)
 
@@ -125,7 +126,7 @@ def backup_file(conf_file_path):
     destination = conf_file_path + '-' + current_time+ '.bak'
     try:
         shutil.copyfile(source, destination)
-        print(Fore.BLUE +"Backup file successfully.")
+        print(Fore.BLUE +"[+] Backup file successfully.")
  
     # If source and destination are same
     except shutil.SameFileError:
@@ -147,7 +148,7 @@ def backup_file(conf_file_path):
     print(Style.RESET_ALL)
 
 def show_banner():
-    print(Fore.BLUE + """ 
+    print(Fore.CYAN + """ 
 
  _______  __ ___ ____        _____    _ _ _             
 |__  /  \/  |_ _/ ___|      | ____|__| (_) |_ ___  _ __ 
@@ -164,13 +165,14 @@ def get_user_input(lst):
     flag = False
     user_input = int()
     for id, val in enumerate(lst):
-        print(str(id+1)+' - '+val)
-    
+        print(Fore.GREEN + str(id+1)+' - '+val +"\n")
+    print(Style.RESET_ALL)
+
     print("Which file you want to modify? \n")
     
     while True:
         try:
-            user_input = int(input("Enter number to choose: "))
+            user_input = int(input("> Enter number to choose: "))
             return lst[user_input-1]
         except ValueError:
             time.sleep(2)
@@ -179,7 +181,7 @@ def get_user_input(lst):
          
         except IndexError:
             time.sleep(2)
-            print(Fore.YELLOW + "Please enter valid number! ")
+            print(Fore.YELLOW + "[!] Please enter valid number! ")
             print(Style.RESET_ALL)
         
     
