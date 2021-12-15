@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from Agent import Agent
 from Configfile import ConfigFile
 from datetime import datetime
@@ -86,7 +88,7 @@ def main():
                         agent = Agent(attr_editor.extract_attr_from_file(conf_file_path), para_editor.extract_parameter_from_file(conf_file_path))
                         print("[*] Current config of Zabbix Agent from {} \n".format(conf_file_path))
                         ExitFlag = attr_editor.menu(agent, conf_list, conf_file_path)
-                        attr_editor.save_changed(agent.attribute, conf_file_path)
+                        attr_editor.save_changed(agent, conf_file_path)
                     except KeyError:
                         print("[-] Your file is not zabbix config, try again")
                 else:

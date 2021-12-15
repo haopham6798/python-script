@@ -31,7 +31,7 @@ def extract_attr_from_file(conf_file):
     return sys_parameters
 
 #ham backup va save cac thay doi
-def save_changed(config_attributes, conf_file):
+def save_changed(agent, conf_file):
     current_config = []
     modified_config_content = ""
 
@@ -40,12 +40,13 @@ def save_changed(config_attributes, conf_file):
     with open(conf_file, "r") as fout:
         lines = fout.readlines()
         for line in lines:
-            current_config.append(line)
+            if line.startswith("UserParameter="):
+                pass
+            else:
+                current_config.append(line)
     
-
-
     for index, item in enumerate(current_config):
-        for key, val in config_attributes.items():
+        for key, val in agent.attribute.items():
             if item.startswith(key+'='):
                 current_config[index] = (key+'='+val+'\n')
             else:
@@ -54,6 +55,9 @@ def save_changed(config_attributes, conf_file):
     fout.close()
     for r in current_config:
         modified_config_content += r
+
+    for para in agent.parameter:
+        modified_config_content += "UserParameter="+para+"\n"
 
     with open(conf_file, 'w') as fin:
         fin.write(modified_config_content)
@@ -99,11 +103,12 @@ def menu(agent, conf_list, conf_file_path):
             agent.set_hostname(changed_data)
         
         elif user_selection == "4":
-            edit_parameter.edit_para_menu(agent, conf_list, conf_file_path)
+            if edit_parameter.edit_para_menu(agent, conf_list, conf_file_path):
+                break
 
         elif user_selection == "5":
             break
-            return True
+            
         elif user_selection == "0":
             get_user_input(conf_list)
 
@@ -111,7 +116,6 @@ def menu(agent, conf_list, conf_file_path):
             time.sleep(2)
             print('-'*80)
             print("I don't understand your choice."+ "Please Enter Again!")
-            print(Style.RESET_ALL)
     return True
 
 def backup_file(conf_file_path):
