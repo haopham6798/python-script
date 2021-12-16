@@ -5,9 +5,9 @@ import re
 
 
 def edit_para_menu(agent, conf_list, conf_file_path):
-    flag = 2
+    flag = False
     print(conf_file_path)
-    while flag >= 2:
+    while flag is False:
         agent.display_parameter()
         print("1. Change user parameter\n")
         
@@ -19,8 +19,8 @@ def edit_para_menu(agent, conf_list, conf_file_path):
         
         print("5. Back (Not Save)\n")
 
-        print("> Enter number to select options")
-        user_selection = input("> Make your choice: ")
+        print("[+] Enter number to select options")
+        user_selection = input(">> Make your choice: ")
         
         if user_selection == "1":
             agent.update_parameter()
@@ -32,12 +32,10 @@ def edit_para_menu(agent, conf_list, conf_file_path):
             agent.add_parameter()
         
         elif user_selection == "4":
-            #return True
-            #write_to_file(agent.parameter, conf_file_path)
             break
 
         elif user_selection == "5":
-            attr_editor.menu(agent, conf_list, conf_file_path)
+            flag = attr_editor.menu(agent, conf_list, conf_file_path)
 
         else:
             time.sleep(2)

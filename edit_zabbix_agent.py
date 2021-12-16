@@ -67,14 +67,11 @@ def save_changed(agent, conf_file):
 
 
 def menu(agent, conf_list, conf_file_path):
-
-    flag = False
-
-    while flag is False:
+    while True:
 
         agent.display_attribute()
 
-        print("> Enter number to select options")
+        print("[+] Enter number to select options")
         
         print("1. Change Server\n")
         
@@ -91,15 +88,15 @@ def menu(agent, conf_list, conf_file_path):
         user_selection = input("Make your choice: ")
         
         if user_selection == "1":
-            changed_data = input("> Input your ip server: ")
+            changed_data = input(">> Input your ip server: ")
             agent.set_server(changed_data)
         
         elif user_selection == "2":
-            changed_data = input("> Input your ip Server Active: ")
+            changed_data = input(">> Input your ip Server Active: ")
             agent.set_server_active(changed_data)
         
         elif user_selection == "3":
-            changed_data = input("> Input your ip Server Active: ")
+            changed_data = input(">> Input your ip Server Active: ")
             agent.set_hostname(changed_data)
         
         elif user_selection == "4":
@@ -110,7 +107,7 @@ def menu(agent, conf_list, conf_file_path):
             break
             
         elif user_selection == "0":
-            get_user_input(conf_list)
+            return False
 
         else:
             time.sleep(2)
@@ -119,13 +116,11 @@ def menu(agent, conf_list, conf_file_path):
     return True
 
 def backup_file(conf_file_path):
-    now = datetime.now()
     path_bak_folder = '/tmp/bak/'
     if(os.path.isdir(path_bak_folder)):
         pass 
-    current_time = now.strftime("%H-%M-%S")
     source = conf_file_path
-    destination = conf_file_path + '-' + current_time+ '.bak'
+    destination = conf_file_path + '.bak'
     try:
         shutil.copyfile(source, destination)
         print("[+] Backup file successfully.")
@@ -150,7 +145,7 @@ def backup_file(conf_file_path):
 
 
 def show_banner():
-    print(""" 
+    banner = """ 
 
  _______  __ ___ ____        _____    _ _ _             
 |__  /  \/  |_ _/ ___|      | ____|__| (_) |_ ___  _ __ 
@@ -159,29 +154,31 @@ def show_banner():
 /____|_|  |_|___|____/      |_____\__,_|_|\__\___/|_|   
     
     
-      """)
-
-
+      """
+    motd = banner.center(os.get_terminal_size().columns)
+    print(motd)
 
 def get_user_input(lst):
-    flag = False
     user_input = int()
     for id, val in enumerate(lst):
         print(str(id+1)+' - '+val +"\n")
-
 
     print("Which file you want to modify? \n")
     
     while True:
         try:
-            user_input = int(input("> Enter number to choose: "))
-            return lst[user_input-1]
+            user_input = int(input(">> Enter number to choose: "))
+            if user_input > 0:
+                return lst[user_input-1]
+            else:
+                time.sleep(1)
+                print("[!] Your input is invalid, please enter again")
         except ValueError:
-            time.sleep(2)
+            time.sleep(1)
             print("[!] Your input is invalid, please enter again")
          
         except IndexError:
-            time.sleep(2)
+            time.sleep(1)
             print("[!] Please enter valid number! ")
         
     

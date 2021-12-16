@@ -8,6 +8,7 @@ import edit_parameter as para_editor
 import time
 import constant
 from optparse import OptionParser
+import gc
 
 def check_user_input(uinput):
     if not uinput:
@@ -33,21 +34,24 @@ def import_from_file():
     parser.add_option("-e", "--editor",
                     action = "store_false", 
                     dest = "editor", default = False,
-                    help = "Enable ZMIS-Editor")
+                    help = "Default: Enable ZMIS-Editor")
     
     (options, args) = parser.parse_args()
 
     srcfile = options.srcfile
     dstfile = options.dstfile
     editor = options.editor
+    import_para_list = list()
     if srcfile and dstfile and editor is False:
         try:
             with open(srcfile, 'r') as fout:
-                with open(dstfile, 'a') as fin:
-                    lines = fout.readlines()
-                    for line in lines:
-                        fin.write(line)
-                fin.close
+                lines = fout.readlines()
+                for line in lines:
+                    if line.startswith("UserParameter="):
+                        import_para_list.append(line)
+            with open(dstfile, 'a') as fin:
+                    fin.write("".join(str(ele) for ele in import_para_list))
+            fin.close
             fout.close
             time.sleep(1)
             print("[+] Your config is imported, please restart service to apply")
@@ -72,34 +76,34 @@ def main():
                 config_path = ConfigFile("/")
             else:
                 config_path = ConfigFile("C:")
-            
+
+            conf_list = config_path.search_conf_file(name)
+            """
             result_searching = config_path.search_conf_file(name)
             if constant.SYSTEM_NAME == "Linux":
                     conf_list = list(path for path in result_searching if "/usr" in path or "/etc" in path)
             else:
                 conf_list = list(path for path in result_searching if "C:" in path or "D:" in path)
-            
-            if not result_searching:
+            """
+            if not conf_list:
                 print("[!] File not found!")
             else:
                 conf_file_path = attr_editor.get_user_input(conf_list)
-                if(conf_file_path):
-                    try:
-                        agent = Agent(attr_editor.extract_attr_from_file(conf_file_path), para_editor.extract_parameter_from_file(conf_file_path))
-                        print("[*] Current config of Zabbix Agent from {} \n".format(conf_file_path))
-                        ExitFlag = attr_editor.menu(agent, conf_list, conf_file_path)
+                try:
+                    agent = Agent(attr_editor.extract_attr_from_file(conf_file_path), para_editor.extract_parameter_from_file(conf_file_path))
+                    print("[*] Current config of Zabbix Agent from {} \n".format(conf_file_path))
+                    ExitFlag = attr_editor.menu(agent, conf_list, conf_file_path)
+                    if ExitFlag:
                         attr_editor.save_changed(agent, conf_file_path)
-                    except KeyError:
-                        print("[-] Your file is not zabbix config, try again")
-                else:
-                    break
-
+                        
+                except KeyError:
+                    print("[-] Your file is not zabbix config, try again")
+        
         except PermissionError:
             time.sleep(2)
             print("[!] You must run this script with administrator privilege - try again with sudo")
             print("[-] Your configuration is not saved!")
             break
-
 
 
 if __name__ == "__main__":
