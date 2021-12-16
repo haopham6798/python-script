@@ -2,13 +2,9 @@
 import os
 
 class ConfigFile:
-    lst_path = []
-    rpath = str()
-
-
     def __init__(self, rpath):
         self.rpath = rpath
-
+        self.lst_path = list()
 
     def search_conf_file(self, name):
         terminal_width = os.get_terminal_size().columns

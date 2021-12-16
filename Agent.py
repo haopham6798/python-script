@@ -23,10 +23,10 @@ class Agent():
                 self.attribute["Server"] = sv
             else:
                 time.sleep(1)
-                print("[!] Invalid IP.")
+                print("[!] Invalid IP.\n")
         except ValueError:
             time.sleep(1)
-            print("[!] Invalid IP.")    
+            print("[!] Invalid IP.\n")    
     
 
     def set_server_active(self, sa):
@@ -35,10 +35,10 @@ class Agent():
                 self.attribute["ServerActive"] = sa
             else:
                 time.sleep(1)
-                print("[!] Invalid IP.")
+                print("[!] Invalid IP.\n")
         except ValueError:
             time.sleep(1)
-            print("[!] Invalid IP.")
+            print("[!] Invalid IP.\n")
     
     def set_hostname(self, hn):
         self.attribute["Hostname"] = hn
@@ -58,12 +58,19 @@ class Agent():
 
 
     def add_parameter(self):
-        new_para = input("> Enter your parameter: ")
-        self.parameter.append(new_para)
+        try:
+            new_para = input(">> Enter your parameter: ")
+            self.parameter.append(new_para)
+
+        except UnicodeDecodeError:     
+            time.sleep(1)
+            print("\n")
+            print("[!] Your input is invalid")
+            print("\n")
 
     def delete_parameter(self):
         try:
-            idx_para = int(input("> Enter index of parameter: "))
+            idx_para = int(input(">> Enter index of parameter: "))
             idx_para -= 1
             delete_para = self.parameter[idx_para]
             for idx, value in enumerate(self.parameter):
@@ -73,19 +80,31 @@ class Agent():
                     pass
 
         except Exception:
-            print(Exception)
+            time.sleep(1)
+            print("\n")
+            print("\t\t\tError\n")
+            print("\n")
         
 
     def update_parameter(self):
         self.display_parameter()
-        changed_idx = int(input("> Enter index of parameter: "))
-        changed_idx -= 1
-        changed_para = input("> Enter your parameter: ")
-        for idx, value in enumerate(self.parameter):
-            if idx == changed_idx:
-                self.parameter[idx] = changed_para
-            else:
-                pass
+        try:
+            changed_idx = int(input(">> Enter index of parameter: "))
+            changed_idx -= 1
+            changed_para = input(">> Enter your parameter: ")
+            for idx, value in enumerate(self.parameter):
+                if idx == changed_idx:
+                    self.parameter[idx] = changed_para
+                else:
+                    pass
+        except Exception:
+            time.sleep(1)
+            print("\n")
+            print('='*os.get_terminal_size().columns)
+            print("\t\t\tError\n")
+            print('='*os.get_terminal_size().columns)
+            print("\n")
+
 
     def display_parameter(self):
         terminal_width = os.get_terminal_size().columns
